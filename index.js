@@ -5,19 +5,21 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 const bookmarkRoutes = require("./routes/bookmark");
+const scrapeRoutes = require("./routes/scrape");
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
 app.use(bookmarkRoutes);
+app.use(scrapeRoutes);
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/bookmark", {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
 
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   return res.send("hello Bookmark  / ");
 });
 

@@ -4,10 +4,11 @@ const Bookmark = mongoose.model("Bookmark", {
   title: String,
   description: String,
   url: String,
+  image: String,
   tag: [], // liste des tags
   done: {
     type: Boolean,
-    default: false
+    default: false,
   },
   metaData: Object, // author , site
 
@@ -16,8 +17,8 @@ const Bookmark = mongoose.model("Bookmark", {
   // date de création
   created: {
     type: Date,
-    default: Date.now()
-  }
+    default: Date.now(),
+  },
 });
 
 module.exports = Bookmark;
