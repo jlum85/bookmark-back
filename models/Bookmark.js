@@ -19,14 +19,5 @@ const Bookmark = mongoose.model("Bookmark", {
     default: Date.now()
   }
 });
-const obj = {
-  title: "A Redux Reducer is like a Coffee Maker",
-  description: "",
-  url: "https://codeburst.io/redux-reducers-are-coffee-makers-8a78dd8bb7a0",
-  tag: ["redux", "React"],
-  meta: {},
-  importance: 1,
-  rating: 5
-};
 
 module.exports = Bookmark;

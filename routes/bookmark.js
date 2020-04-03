@@ -1,14 +1,46 @@
 const express = require("express");
 const router = express.Router();
+const middlewares = require("./middlewares");
 
 const Bookmark = require("../models/Bookmark");
 
+const updateBookMark = async (bookmark, req) => {
+  if (!bookmark || !req.body) {
+    return "";
+  }
+  const { title, description, url, tag, meta, importance, rating } = req.body;
+
+  if (title) {
+    bookmark.title = title;
+  }
+  if (description) {
+    bookmark.description = description;
+  }
+  if (url) {
+    bookmark.url = url;
+  }
+  if (tag && tag.length > 0) {
+    bookmark.tag = [...tag];
+  }
+  if (meta) {
+    bookmark.meta = { ...meta };
+  }
+  if (importance && Number.isInteger(importance)) {
+    bookmark.importance = importance;
+  }
+  if (rating && Number.isInteger(rating)) {
+    bookmark.rating = rating;
+  }
+
+  await bookmark.save();
+};
+
 // POST  /create
-router.post("/bookmark/create", async (req, res) => {
+router.post("/bookmark/create", middlewares.authenticate, async (req, res) => {
   console.log(">> Method : " + req.method + " , Route : " + req.route.path);
   console.log(">> Url : " + req.originalUrl);
   try {
-    const { title, description, url, tag, meta, importance, rating } = req.body;
+    const { title, url } = req.body;
 
     if (!title || !url) {
       res.status(400).json({ message: "Missing parameter" });
@@ -17,25 +49,10 @@ router.post("/bookmark/create", async (req, res) => {
 
     const newBookmark = new Bookmark({
       title,
-      url
+      url,
     });
-    if (description) {
-      newBookmark.description = description;
-    }
-    if (tag && tag.length > 0) {
-      newBookmark.tag = [...tag];
-    }
-    if (meta) {
-      newBookmark.meta = { ...meta };
-    }
-    if (importance && Number.isInteger(importance)) {
-      newBookmark.importance = importance;
-    }
-    if (rating && Number.isInteger(rating)) {
-      newBookmark.rating = rating;
-    }
+    await updateBookMark(newBookmark, req);
 
-    await newBookmark.save();
     res.json(newBookmark);
     //res.json({ message: "Created" });
   } catch (error) {
@@ -45,20 +62,33 @@ router.post("/bookmark/create", async (req, res) => {
 });
 
 // POST   /update
-router.post("/bookmark/update", async (req, res) => {
+router.post("/bookmark/update", middlewares.authenticate, async (req, res) => {
   console.log(">> Method : " + req.method + " , Route : " + req.route.path);
   console.log(">> Url : " + req.originalUrl);
-  try {
-    //
 
-    res.json({ message: "Updated" });
+  try {
+    let { id } = req.fields;
+
+    if (!id) {
+      res.status(400).json({ message: "Missing parameter" });
+      return "Error";
+    }
+    let bookmarkUpdate = await Bookmark.findById(id);
+    if (bookmarkUpdate) {
+      await updateBookMark(bookmarkUpdate, req);
+
+      res.json(bookmarkUpdate);
+    } else {
+      res.json({ message: "bookmarkDelete not found" });
+    }
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.log(error);
+    res.status(400).json({ error: error.message });
   }
 });
 
 // POST   /delete
-router.post("/bookmark/delete", async (req, res) => {
+router.post("/bookmark/delete", middlewares.authenticate, async (req, res) => {
   console.log(">> Method : " + req.method + " , Route : " + req.route.path);
   console.log(">> Url : " + req.originalUrl);
 
@@ -82,7 +112,7 @@ router.post("/bookmark/delete", async (req, res) => {
 });
 
 // GET   Read
-router.get("/bookmark", async (req, res) => {
+router.get("/bookmark", middlewares.authenticate, async (req, res) => {
   console.log(">> Method : " + req.method + " , Route : " + req.route.path);
   console.log(">> Url : " + req.originalUrl);
   try {
