@@ -27,7 +27,7 @@ app.all("*", (req, res) => {
   res.status(404).send("Page introuvable");
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3006;
 app.listen(port, () => {
   const date = new Date().toLocaleString("fr-FR", { hour12: false });
   console.log(`Server started : ${date} on port ${port}`);

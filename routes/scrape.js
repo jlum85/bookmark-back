@@ -73,8 +73,7 @@ router.post("/scrape", middlewares.authenticate, async (req, res) => {
     //   }
     // }
 
-    // res.end(JSON.stringify(resObj));
-    console.log(JSON.stringify(resObj));
+    // console.log(JSON.stringify(resObj));
 
     try {
       const newBookmark = new Bookmark({
